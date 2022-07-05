@@ -2,12 +2,19 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+)
+
+var (
+	Channel  = flag.String("channel", "", "Channel ID")
+	BotToken = flag.String("token", "", "Bot token")
 )
 
 type Author struct {
@@ -16,15 +23,14 @@ type Author struct {
 }
 
 type Post struct {
-	Summary string `json:"title"`
-	Message string `json:"excerpt"`
-	Url     string `json:"url"`
-	Author  Author `json:"user"`
+	Summary   string `json:"title"`
+	Message   string `json:"excerpt"`
+	Url       string `json:"url"`
+	Author    Author `json:"user"`
+	TimeStamp string `json:"created_at"`
 }
 
-type Message struct {
-	*discordgo.MessageEmbed
-}
+func init() { flag.Parse() }
 
 func main() {
 	const baseUrl = "https://forums.newworld.com"
@@ -44,30 +50,58 @@ func main() {
 
 	body, err := ioutil.ReadAll(resp.Body)
 
+	if err != nil {
+		fmt.Printf("Error %s", err)
+		return
+	}
+
 	var posts []Post
 
 	json.Unmarshal([]byte(body), &posts)
 
-	token := "test123"
-	channel := "channel-1"
-
-	discord, err := discordgo.New(token)
+	session, err := discordgo.New("Bot " + *BotToken)
 
 	if err != nil {
-		fmt.Println("error creating Discord session,", err)
+		fmt.Printf("Error %s", err)
 		return
 	}
 
+	getLatestChannelMessage(session)
+
 	for _, post := range posts {
-		var message Message
+		sendDiscordMessage(session, baseUrl, post)
+	}
+}
 
-		message.URL = baseUrl + post.Url
-		message.Description = post.Message
-		message.Author.Name = post.Author.User + "(" + post.Author.Role + ")"
-		message.Color = 15158332
-		message.Title = "New Developer Post"
+func sendDiscordMessage(session *discordgo.Session, baseUrl string, post Post) {
 
-		discord.ChannelMessageSendEmbed(channel, message.MessageEmbed)
+	var color int
+
+	switch post.Author.Role {
+	case "Community Manager":
+		color = 3066993
+	case "New World Developer":
+		color = 15158332
+	default:
+		color = 8359053
 	}
 
+	_, err := session.ChannelMessageSendEmbed(*Channel, &discordgo.MessageEmbed{
+		URL:         baseUrl + post.Url,
+		Description: post.Message,
+		Color:       color,
+		Title:       "New Developer Post",
+		Timestamp:   post.TimeStamp,
+	})
+	if err != nil {
+		log.Printf("Error sending message: %v", err)
+	}
+}
+
+func getLatestChannelMessage(session *discordgo.Session) time.Time {
+	latestChannelMessage, err := session.ChannelMessages(*Channel, 1, "", "", "")
+	if err != nil {
+		log.Printf("Could not get latest message: %v", err)
+	}
+	return latestChannelMessage[0].Timestamp
 }
