@@ -59,6 +59,10 @@ func main() {
 
 	json.Unmarshal([]byte(body), &posts)
 
+	reversedPosts := reversePosts(posts)
+
+	fmt.Println(reversedPosts)
+
 	session, err := discordgo.New("Bot " + *BotToken)
 
 	if err != nil {
@@ -66,11 +70,24 @@ func main() {
 		return
 	}
 
-	getLatestChannelMessage(session)
+	latestMessage := getLatestChannelMessageContent(session)
 
-	for _, post := range posts {
+	latestPostIndex := len(posts)
+
+	if len(latestMessage) > 0 {
+		latestPostIndex = findPost(reversedPosts, latestMessage)
+		fmt.Println(latestPostIndex)
+	}
+
+	fmt.Println(latestPostIndex)
+
+	for i, post := range reversedPosts {
+		if i <= latestPostIndex {
+			continue
+		}
 		sendDiscordMessage(session, baseUrl, post)
 	}
+
 }
 
 func sendDiscordMessage(session *discordgo.Session, baseUrl string, post Post) {
@@ -98,10 +115,33 @@ func sendDiscordMessage(session *discordgo.Session, baseUrl string, post Post) {
 	}
 }
 
-func getLatestChannelMessage(session *discordgo.Session) time.Time {
+func getLatestChannelMessageContent(session *discordgo.Session) string {
 	latestChannelMessage, err := session.ChannelMessages(*Channel, 1, "", "", "")
 	if err != nil {
 		log.Printf("Could not get latest message: %v", err)
 	}
-	return latestChannelMessage[0].Timestamp
+
+	if len(latestChannelMessage) > 0 {
+		latestMessageContent := latestChannelMessage[0].Embeds[0].Description
+		return latestMessageContent
+	}
+	return ""
+
+}
+
+func findPost(posts []Post, x string) int {
+	for i, post := range posts {
+		if x == post.Message {
+			return i
+		}
+	}
+	return len(posts)
+}
+
+func reversePosts(posts []Post) []Post {
+	for i := 0; i < len(posts)/2; i++ {
+		j := len(posts) - i - 1
+		posts[i], posts[j] = posts[j], posts[i]
+	}
+	return posts
 }
