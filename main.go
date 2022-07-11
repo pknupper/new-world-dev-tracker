@@ -90,7 +90,7 @@ func sendDiscordMessage(session *discordgo.Session, baseUrl string, post Post) {
 		URL:         baseUrl + post.Url,
 		Description: post.Message,
 		Color:       color,
-		Title:       "New Developer Post",
+		Title:       post.Summary,
 		Timestamp:   post.TimeStamp,
 	})
 	if err != nil {
