@@ -61,8 +61,6 @@ func main() {
 
 	reversedPosts := reversePosts(posts)
 
-	fmt.Println(reversedPosts)
-
 	session, err := discordgo.New("Bot " + *BotToken)
 
 	if err != nil {
@@ -77,8 +75,6 @@ func main() {
 	if len(latestMessage) > 0 {
 		latestPostIndex = findPost(reversedPosts, latestMessage)
 	}
-
-	fmt.Println(latestPostIndex)
 
 	for i, post := range reversedPosts {
 		if i <= latestPostIndex {
