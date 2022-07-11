@@ -76,7 +76,6 @@ func main() {
 
 	if len(latestMessage) > 0 {
 		latestPostIndex = findPost(reversedPosts, latestMessage)
-		fmt.Println(latestPostIndex)
 	}
 
 	fmt.Println(latestPostIndex)
