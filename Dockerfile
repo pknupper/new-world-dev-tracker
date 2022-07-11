@@ -10,4 +10,5 @@ COPY *.go ./
 
 RUN go build -o /new-world-dev-tracker
 
-CMD [ "/new-world-dev-tracker" ]
+ENTRYPOINT echo "Starting New World Dev Tracker"
+ENTRYPOINT [ "/new-world-dev-tracker" ]
