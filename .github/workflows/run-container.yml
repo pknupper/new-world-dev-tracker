@@ -4,7 +4,7 @@ on:
   push:
     branches: [ "main" ]
   schedule:
-    - cron: '10 * * * *'
+    - cron: '*/10 * * * *'
 env:
   CHANNEL: ${{ secrets.CHANNEL }}
   BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
@@ -12,7 +12,7 @@ env:
 jobs:
       
   build:
-    name: Build
+    name: Execute Container
     runs-on: ubuntu-18.04
     steps:
 
