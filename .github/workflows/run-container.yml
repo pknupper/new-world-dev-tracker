@@ -1,6 +1,8 @@
 name: run-container
 
 on:
+  push:
+    branches: [ "main" ]
   schedule:
     - cron: '10 * * * *'
 env:
@@ -21,4 +23,4 @@ jobs:
       run: docker pull ghcr.io/pknupper/new-world-dev-tracker:main
 
     - name: Run Container
-      run: docker run -channel $CHANNEL -token $BOT_TOKEN
+      run: docker run --name new-world-dev-tracker -channel $CHANNEL -token $BOT_TOKEN
