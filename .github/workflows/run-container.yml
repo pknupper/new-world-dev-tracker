@@ -23,4 +23,4 @@ jobs:
       run: docker pull ghcr.io/pknupper/new-world-dev-tracker:main
 
     - name: Run Container
-      run: docker images
+      run: docker run ghcr.io/pknupper/new-world-dev-tracker:main -channel "test" -token "test12"
