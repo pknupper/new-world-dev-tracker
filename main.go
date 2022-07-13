@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -20,6 +21,7 @@ var (
 type Author struct {
 	User string `json:"username"`
 	Role string `json:"title"`
+	Icon string `json:"avatar_template"`
 }
 
 type Post struct {
@@ -104,6 +106,12 @@ func sendDiscordMessage(session *discordgo.Session, baseUrl string, post Post) {
 		Color:       color,
 		Title:       post.Summary,
 		Timestamp:   post.TimeStamp,
+		Thumbnail: &discordgo.MessageEmbedThumbnail{
+			URL: baseUrl + strings.Replace(post.Author.Icon, "{size}", "100", 1),
+		},
+		Author: &discordgo.MessageEmbedAuthor{
+			Name: post.Author.User + "(" + post.Author.Role + ")",
+		},
 	})
 	if err != nil {
 		log.Printf("Error sending message: %v", err)
