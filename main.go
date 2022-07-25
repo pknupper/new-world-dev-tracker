@@ -71,8 +71,12 @@ func main() {
 	}
 
 	latestMessage := getLatestChannelMessageContent(session)
+	
+	fmt.Printf("Error %s", latestMessage)
 
 	latestPostIndex := len(posts)
+	
+	fmt.Printf("Error %s", latestPostIndex)
 
 	if len(latestMessage) > 0 {
 		latestPostIndex = findPost(reversedPosts, latestMessage)
