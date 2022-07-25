@@ -116,6 +116,7 @@ func sendDiscordMessage(session *discordgo.Session, baseUrl string, post Post) {
 	if err != nil {
 		log.Printf("Error sending message: %v", err)
 	}
+	log.Printf("Sent message: %v", post.Summary)
 }
 
 func getLatestChannelMessageContent(session *discordgo.Session) string {
