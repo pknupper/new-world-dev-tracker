@@ -72,12 +72,10 @@ func main() {
 
 	latestMessage := getLatestChannelMessageContent(session)
 	
-	fmt.Printf("Error %s", latestMessage)
+	fmt.Printf("latest message %s", latestMessage)
 
 	latestPostIndex := len(posts)
 	
-	fmt.Printf("Error %s", latestPostIndex)
-
 	if len(latestMessage) > 0 {
 		latestPostIndex = findPost(reversedPosts, latestMessage)
 	}
@@ -103,6 +101,8 @@ func sendDiscordMessage(session *discordgo.Session, baseUrl string, post Post) {
 	default:
 		color = 8359053
 	}
+	
+	log.Printf("Sending message message: %v", post.Summary)
 
 	_, err := session.ChannelMessageSendEmbed(*Channel, &discordgo.MessageEmbed{
 		URL:         baseUrl + post.Url,
