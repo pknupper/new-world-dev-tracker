@@ -143,7 +143,7 @@ func findPost(posts []Post, x string) int {
 			return i
 		}
 	}
-	return len(posts)
+	return 0
 }
 
 func reversePosts(posts []Post) []Post {
